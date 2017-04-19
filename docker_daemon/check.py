@@ -169,7 +169,11 @@ class DockerDaemon(AgentCheck):
             self.docker_gateway = DockerUtil.get_gateway()
 
             if Platform.is_k8s():
-                self.kubeutil = KubeUtil()
+                try:
+                    self.kubeutil = KubeUtil()
+                except Exception as ex:
+                    self.log.error("Couldn't instantiate the kubernetes client, "
+                        "subsequent kubernetes calls will fail as well. Error: %s" % str(ex))
 
             # We configure the check with the right cgroup settings for this host
             # Just needs to be done once
